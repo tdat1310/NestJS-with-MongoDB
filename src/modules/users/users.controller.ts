@@ -7,9 +7,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
+import { query } from "express";
 import mongoose from "mongoose";
 import { CreateUserDto } from "src/modules/users/dto/CreateUser.dto";
 import { UpdateUserDto } from "src/modules/users/dto/UpdateUser.dto";
@@ -27,8 +29,12 @@ export class UsersController {
   }
 
   @Get()
-  getUser() {
-    return this.usersService.getUsers();
+   async getUser(
+    @Query() query : string,
+    @Query("current") current : string,
+    @Query("pageSize") pageSize : string,
+  ) {
+    return this.usersService.getUsers(query, +current, +pageSize);
   }
 
   @Get(":id")

@@ -7,12 +7,17 @@ https://docs.nestjs.com/modules
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Product, productSchema } from "src/schemas/Product.schema";
+import { userModule } from "src/modules/users/users.module";
 
 @Module({
-  imports: [MongooseModule.forFeature([{
-    name: Product.name,
-    schema: productSchema
-  }])],
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: Product.name,
+        schema: productSchema,
+      },
+    ]),
+  ],
   controllers: [ProductsController],
   providers: [ProductsService],
 })

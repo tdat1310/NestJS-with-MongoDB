@@ -18,6 +18,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     'prettier/prettier': 'off', // Tắt rule prettier
+     "@typescript-eslint/no-require-imports": "off",
     '@typescript-eslint/no-unused-vars': 'off',
     'no-unused-vars': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

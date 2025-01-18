@@ -8,10 +8,11 @@ export class User {
   userName: string;
 
   @Prop()
-  age: number;
+  email: string;
 
   @Prop()
-  avt?: string;
+  password: string;
+
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
