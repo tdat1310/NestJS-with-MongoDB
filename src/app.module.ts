@@ -1,15 +1,28 @@
 import { ProductsModule } from "./modules/products/products.module";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { userModule } from "src/modules/users/users.module";
+import { UserModule } from "src/modules/users/users.module";
+import { ConfigModule } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
+import { AuthModule } from "src/modules/auth/auth.module";
 
 @Module({
   imports: [
+    AuthModule,
     ProductsModule,
-    MongooseModule.forRoot(
-      "mongodb+srv://admin:123@thedatapi.dackkg6.mongodb.net/NestJS?retryWrites=true&w=majority&appName=TheDatAPI",
-    ),
-    userModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule], // Import ConfigModule để sử dụng ConfigService
+      inject: [ConfigService], // Inject ConfigService để lấy giá trị cấu hình
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>("MONGODB_URL"), // Lấy URL MongoDB từ biến môi trường
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true,
+      }),
+    }),
+    UserModule,
+    ConfigModule.forRoot({
+      isGlobal: true, // Để ConfigModule khả dụng toàn cục
+    }),
   ],
   controllers: [],
   providers: [],

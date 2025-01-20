@@ -59,7 +59,9 @@ export class UsersService {
   getUserById(id: string) {
     return this.userModel.findById(id).populate("purchasedProducts");
   }
-
+  getUserByName(userName: string) {
+    return this.userModel.findOne({userName}).populate("purchasedProducts");
+  }
   updateUser(id: string, updateUserDto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
   }
