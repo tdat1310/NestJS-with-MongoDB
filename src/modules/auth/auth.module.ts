@@ -22,7 +22,7 @@ import { JwtStrategy } from "src/modules/auth/passport/jwt.strategy";
       inject: [ConfigService],
     }),
     UserModule,
-    PassportModule
+    PassportModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
