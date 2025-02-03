@@ -1,3 +1,4 @@
+import { MailerService } from "@nestjs-modules/mailer";
 import {
   Body,
   Controller,
@@ -19,7 +20,9 @@ import { UsersService } from "src/modules/users/users.service";
 
 @Controller("users")
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+  ) {}
 
   @Post()
   @UsePipes(new ValidationPipe())
@@ -29,10 +32,10 @@ export class UsersController {
   }
 
   @Get()
-   async getUser(
-    @Query() query : string,
-    @Query("current") current : string,
-    @Query("pageSize") pageSize : string,
+  async getUser(
+    @Query() query: string,
+    @Query("current") current: string,
+    @Query("pageSize") pageSize: string,
   ) {
     return this.usersService.getUsers(query, +current, +pageSize);
   }

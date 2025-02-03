@@ -6,9 +6,14 @@ import { CreateUserDto } from "src/modules/users/dto/CreateUser.dto";
 import { UpdateUserDto } from "src/modules/users/dto/UpdateUser.dto";
 import { hashPassword } from "src/helpers/utils";
 import aqp from "api-query-params";
+import { MailerService } from "@nestjs-modules/mailer";
+
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly mailerService: MailerService,
+  ) {}
 
   isEmailExist = async (email: string) => {
     const isExist = await this.userModel.exists({ email });
@@ -30,37 +35,49 @@ export class UsersService {
       password: hashPwd,
       email,
     });
+
+    //send email
+    this.mailerService.sendMail({
+      to: email, // list of receivers
+      subject: "Activate your account ✔", // Subject line
+      template: "register",
+      context: {
+        name: userName,
+        activationCode: 123456789,
+      },
+    });
+
     // Lưu người dùng mới và trả về chỉ ID
     const savedUser = await newUser.save();
     return { id: savedUser._id }; // Trả về ID của người dùng
   }
 
-  async getUsers(query: string, current : number, pageSize : number) {
+  async getUsers(query: string, current: number, pageSize: number) {
     const { filter, sort } = aqp(query);
-    if(filter.current) delete filter.current
-    if(filter.pageSize) delete filter.pageSize
-    if(!current) current = 1
-    if(!pageSize) pageSize = 10
+    if (filter.current) delete filter.current;
+    if (filter.pageSize) delete filter.pageSize;
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
 
-    const totalItems = ((await this.userModel.find(filter)).length)
-    const totalPages = Math.ceil(totalItems/pageSize);
-    const skip = (current - 1) * pageSize
+    const totalItems = (await this.userModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const skip = (current - 1) * pageSize;
 
     const result = await this.userModel
-    .find(filter)
-    .limit(pageSize)
-    .skip(skip)
-    .sort(sort as any)
-    .select("-password")
-    .populate("purchasedProducts")
-    return {result, totalPages};
+      .find(filter)
+      .limit(pageSize)
+      .skip(skip)
+      .sort(sort as any)
+      .select("-password")
+      .populate("purchasedProducts");
+    return { result, totalPages };
   }
 
   getUserById(id: string) {
     return this.userModel.findById(id).populate("purchasedProducts");
   }
   getUserByName(userName: string) {
-    return this.userModel.findOne({userName}).populate("purchasedProducts");
+    return this.userModel.findOne({ userName }).populate("purchasedProducts");
   }
   updateUser(id: string, updateUserDto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
